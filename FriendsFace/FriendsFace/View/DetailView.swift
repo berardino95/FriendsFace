@@ -12,41 +12,48 @@ struct DetailView: View {
     var user : User
     
     var body: some View {
-        ScrollView{
-            VStack(alignment: .center, spacing: 10){
-                
-                ProfilePictureView()
-                
-                HStack{
-                    IsActiveCircleView(user: user)
-                        .frame(width: 10)
-                    Text(user.isActive ? "online" : "offline")
-                }
-                
-                Text("Registered on \(user.registered.formatted(date: .abbreviated, time: .omitted))")
-                
-                Text("email: \(user.email)")
-                
-                Text(user.address)
-                    .multilineTextAlignment(.center)
-                
-                Text(user.about)
-                    .padding(.horizontal)
-                
-                NavigationLink {
-                    FriendsListView(friends: user.friends)
-                } label: {
-                    Text("See \(user.name) friends")
-                }
+        List{
+            HStack{
+                Spacer()
+                ProfilePictureView(user: user)
+                Spacer()
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            
+            Section {
+                Text(user.about)
+            } header: {
+                Text("About")
+            }
+            
+            Section{
+                Text("Email: \(user.email)")
+                Text("Address \(user.address)")
+                Text("Company: \(user.company)")
+            } header: {
+                Text("Info")
+            }
+            
+            Section{
+                ForEach(user.friends) { friend in
+                    Text(friend.name)
+                }
+            } header: {
+                Text("\(user.name) friends")
+            }
+        }
+            .background(Color(.systemGray6))
+            .listStyle(.grouped)
             .navigationTitle(user.name)
             .navigationBarTitleDisplayMode(.inline)
-        }
     }
 }
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailView(user: User.example)
+        NavigationView {
+            DetailView(user: User.example)
+        }
     }
 }

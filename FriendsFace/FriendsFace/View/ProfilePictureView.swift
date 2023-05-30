@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct ProfilePictureView: View {
+    
+    var user: User
+    
     var body: some View {
         Circle()
             .fill(.gray)
             .frame(width: 150, height: 150)
-            .padding()
             .overlay {
-                Image(systemName: "person.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
+                Text(user.nameLetter)
+                    .font(.system(size: 80))
                     .foregroundColor(.white)
             }
     }
@@ -25,6 +25,6 @@ struct ProfilePictureView: View {
 
 struct ProfilePictureView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfilePictureView()
+        ProfilePictureView(user: User.example)
     }
 }
