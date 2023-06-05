@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @State private var users = [User]()
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: [SortDescriptor(\.name)]) var users : FetchedResults<CachedUser>
     
     var body: some View {
         NavigationView {
@@ -21,18 +22,31 @@ struct ContentView: View {
                         IsActiveCircleView(user: user)
                             .frame(width: 10, height: 10)
                         VStack(alignment: .leading){
-                            Text(user.name)
+                            Text(user.wrappedName)
                                 .font(.headline)
-                            Text(user.email)
+                            Text(user.wrappedEmail)
                                 .font(.caption)
                         }
                     }
                 }
             }
             .navigationTitle("My Friends")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button {
+                        for user in users {
+                            print(user.name ?? "")
+                            print(user.friendArray)
+                        }
+                        
+                    } label: {
+                        Text("Print")
+                    }
+                }
+            }
         }
         .task {
-            await loadData()
+            await loadData() //Comment this to test offline mode
         }
     }
     
@@ -52,13 +66,45 @@ struct ContentView: View {
         
         do{
             let (data, _) = try await URLSession.shared.data(from: url)
-            if let decodeData = try? decoder.decode([User].self, from: data) {
-                users = decodeData
+            let decodedUser = try decoder.decode([User].self, from: data)
+            
+            await MainActor.run {
+                addDataToCoreData(from: decodedUser)
             }
+            
         } catch {
             print("Invalid data")
         }
         
+    }
+    
+    func addDataToCoreData(from downloadedUsers : [User]){
+        
+        for user in downloadedUsers {
+            let newUser = CachedUser(context: moc)
+            newUser.id = user.id
+            newUser.about = user.about
+            newUser.adress = user.address
+            newUser.age = Int16(user.age)
+            newUser.company = user.company
+            newUser.email = user.email
+            newUser.isActive = user.isActive
+            newUser.name = user.name
+            newUser.registered = user.registered
+            newUser.tag = user.tags.joined(separator: ",")
+            
+            for friend in user.friends {
+                let newFriend = CachedFriend(context: moc)
+                newFriend.id = friend.id
+                newFriend.name = friend.name
+                
+                newUser.addToFriends(newFriend)
+            }
+        }
+        
+        if moc.hasChanges {
+            try? moc.save()
+        }
     }
     
     

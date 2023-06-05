@@ -27,6 +27,44 @@ extension CachedUser {
     @NSManaged public var registered: Date?
     @NSManaged public var tag: String?
     @NSManaged public var friends: NSSet?
+    
+    var wrappedName : String {
+        name ?? "Unknown name"
+    }
+    var wrappedCompany : String {
+        company ?? "Unknown company"
+    }
+    var wrappedEmail : String {
+        email ?? "Unknown name"
+    }
+    var wrappedAddress : String {
+        adress ?? "Unknown address"
+    }
+    var wrappedAbout : String {
+        about ?? "Unknown about"
+    }
+    var wrappedRegisteredDate : Date {
+        registered ?? Date.now
+    }
+    var tagArray : [String] {
+        tag?.components(separatedBy: ",") ?? ["no tag"]
+    }
+    
+    var nameLetter : String {
+        var nameLetter = ""
+        let nameArray = wrappedName.split(separator: " ")
+        for word in nameArray {
+            nameLetter += String(word.first!)
+        }
+        return nameLetter
+    }
+    
+    public var friendArray : [CachedFriend] {
+        let set = friends as? Set<CachedFriend> ?? []
+        return set.sorted{
+            $0.wrappedName < $1.wrappedName
+        }
+    }
 
 }
 

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ProfilePictureView: View {
     
-    var user: User
+    @Environment(\.managedObjectContext) var moc
+    var user: CachedUser
     
     var body: some View {
         Circle()
@@ -22,9 +23,9 @@ struct ProfilePictureView: View {
             }
     }
 }
-
-struct ProfilePictureView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfilePictureView(user: User.example)
-    }
-}
+//
+//struct ProfilePictureView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ProfilePictureView(user: CachedUser(context: moc)}
+//    }
+//}

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct IsActiveCircleView: View {
     
-    let user : User
+    let user : CachedUser
     
     var body: some View {
         Circle()
@@ -17,8 +17,8 @@ struct IsActiveCircleView: View {
     }
 }
 
-struct IsActiveCircleView_Previews: PreviewProvider {
-    static var previews: some View {
-        IsActiveCircleView(user: User.example)
-    }
-}
+//struct IsActiveCircleView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        IsActiveCircleView(user: User.example)
+//    }
+//}
